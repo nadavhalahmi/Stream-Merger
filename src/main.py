@@ -13,7 +13,7 @@ def main():
         input_bytes: bytes = input("Please enter input:\n").encode()
         if not input_bytes:
             break
-        outputs.append(translator.translate(input_bytes))
+        outputs = translator.translate(input_bytes)
         print(outputs)
 
 
