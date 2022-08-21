@@ -1,4 +1,4 @@
-from Translator import Translator
+from Translators import FixedTranslator
 from typing import List, Optional
 import argparse
 
@@ -23,11 +23,11 @@ def main():
                         fixed, offset, endseq], help='Arg choice.  See the choices options below')
     args = parser.parse_args()
     message_type = args.message_type
-    translator: Optional[Translator] = None
+    translator: Optional[FixedTranslator] = None
     sync: bytes = input("Please enter sync bytes:\n").encode()
     if message_type == fixed:
         data_size: int = int(input("Please enter data size:\n"))
-        translator = Translator(sync, data_size)
+        translator = FixedTranslator(sync, data_size)
     elif message_type == offset:
         return 0
     elif message_type == endseq:
