@@ -1,5 +1,11 @@
 import pytest
 from typing import List
+from src import Translator
+
+
+@pytest.fixture
+def translator() -> Translator:
+    return Translator()
 
 
 @pytest.fixture
