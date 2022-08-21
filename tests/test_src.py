@@ -20,3 +20,11 @@ def test_3_inputs_2_outputs(translator: Translator, inputs_3: List[bytes], basic
     assert translator.translate(inputs_3[0], ) == [basic_output]
     assert translator.translate(inputs_3[1]) == [basic_output]
     assert translator.translate(inputs_3[2]) == [basic_output, basic_output]
+
+
+def test_4_inputs_3_outputs(translator: Translator, inputs_4: List[bytes], basic_sync: bytes, basic_output: bytes, basic_data_size: int) -> None:
+    assert translator.translate(inputs_4[0], ) == [basic_output]
+    assert translator.translate(inputs_4[1]) == [basic_output]
+    assert translator.translate(inputs_4[2]) == [basic_output, basic_output]
+    assert translator.translate(inputs_4[3]) == [
+        basic_output, basic_output, basic_output]

@@ -41,3 +41,8 @@ def inputs_2() -> List[bytes]:
 @pytest.fixture
 def inputs_3() -> List[bytes]:
     return [b'prefix!!123', b'45!!', b'12390!']
+
+
+@pytest.fixture
+def inputs_4() -> List[bytes]:
+    return [b'prefix!!123', b'45!!', b'12390!', b'!12345']
