@@ -1,4 +1,5 @@
 from typing import List
+import re
 
 
 class FixedTranslator:
@@ -28,4 +29,18 @@ class OffsetTranslator:
         splited_so_far = list(
             filter(lambda x: x, map(
                 lambda s: s[self.offset_size:self.offset_size + s[self.offset_size-1]], splited_so_far)))  # TODO: fix
+        return splited_so_far
+
+
+class EndseqTranslator:
+    def __init__(self, sync: bytes, endseq: bytes):
+        self.sync: bytes = sync
+        self.endseq: bytes = endseq
+        self.input_so_far: bytes = b''
+        self.pattern: str = rf'{self.sync}.*{self.endseq}'
+
+    def translate(self, input_bytes: bytes) -> List[bytes]:
+        self.input_so_far += input_bytes
+        splited_so_far: List[bytes] = re.findall(
+            self.pattern, self.input_so_far.decode())
         return splited_so_far
