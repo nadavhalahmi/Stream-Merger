@@ -1,4 +1,5 @@
 import pytest
+from typing import List
 
 
 @pytest.fixture
@@ -24,3 +25,8 @@ def basic_data_size() -> int:
 @pytest.fixture
 def input_with_prefix() -> bytes:
     return b'prefix!!123'
+
+
+@pytest.fixture
+def inputs() -> List[bytes]:
+    return [b'prefix!!123', b'45!!']
