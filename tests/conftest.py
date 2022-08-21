@@ -4,8 +4,8 @@ from src import Translator
 
 
 @pytest.fixture
-def translator() -> Translator:
-    return Translator()
+def translator(basic_sync: bytes, basic_data_size: int) -> Translator:
+    return Translator(basic_sync, basic_data_size)
 
 
 @pytest.fixture
@@ -34,5 +34,10 @@ def input_with_prefix() -> bytes:
 
 
 @pytest.fixture
-def inputs() -> List[bytes]:
+def inputs_2() -> List[bytes]:
     return [b'prefix!!123', b'45!!']
+
+
+@pytest.fixture
+def inputs_3() -> List[bytes]:
+    return [b'prefix!!123', b'45!!', b'12390!']

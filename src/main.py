@@ -8,12 +8,12 @@ def main():
     sync: bytes = input("Please enter sync bytes:\n").encode()
     data_size: int = int(input("Please enter data size:\n"))
     outputs: List[bytes] = []
-    translator: Translator = Translator()
+    translator: Translator = Translator(sync, data_size)
     while True:
         input_bytes: bytes = input("Please enter input:\n").encode()
         if not input_bytes:
             break
-        outputs.append(translator.translate(input_bytes, sync, data_size))
+        outputs.append(translator.translate(input_bytes))
         print(outputs)
 
 
