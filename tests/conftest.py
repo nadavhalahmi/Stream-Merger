@@ -1,10 +1,10 @@
 import pytest
 from typing import List
-from src import FixedTranslator
+from src import FixedTranslator, OffsetTranslator
 
 
 @pytest.fixture
-def translator(basic_sync: bytes, basic_data_size: int) -> FixedTranslator:
+def fixed_translator(basic_sync: bytes, basic_data_size: int) -> FixedTranslator:
     return FixedTranslator(basic_sync, basic_data_size)
 
 
@@ -46,3 +46,18 @@ def inputs_3() -> List[bytes]:
 @pytest.fixture
 def inputs_4() -> List[bytes]:
     return [b'prefix!!123', b'45!!', b'12390!', b'!12345']
+
+
+@pytest.fixture
+def offset_translator(basic_sync: bytes, offset_size: int) -> OffsetTranslator:
+    return OffsetTranslator(basic_sync, offset_size)
+
+
+@pytest.fixture
+def offset_input() -> bytes:
+    return b'!!@\x03123'
+
+
+@pytest.fixture
+def offset_size() -> int:
+    return 2
