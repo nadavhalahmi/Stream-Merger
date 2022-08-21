@@ -1,11 +1,11 @@
 import pytest
 from typing import List
-from src import Translator
+from src import FixedTranslator
 
 
 @pytest.fixture
-def translator(basic_sync: bytes, basic_data_size: int) -> Translator:
-    return Translator(basic_sync, basic_data_size)
+def translator(basic_sync: bytes, basic_data_size: int) -> FixedTranslator:
+    return FixedTranslator(basic_sync, basic_data_size)
 
 
 @pytest.fixture

@@ -1,7 +1,7 @@
 from typing import List
 
 
-class Translator:
+class FixedTranslator:
     def __init__(self, sync: bytes, data_size: int):
         self.sync: bytes = sync
         self.data_size: int = data_size
