@@ -1,0 +1,7 @@
+Please enter sync bytes:
+Please enter end sequence:
+Please enter input:
+outputs: []
+Please enter input:
+outputs: ['0x89d16c3b904c']
+Please enter input:
