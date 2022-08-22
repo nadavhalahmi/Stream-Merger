@@ -2,13 +2,21 @@ from typing import List
 import re
 
 
-class FixedTranslator:
-    def __init__(self, sync: bytes, data_size: int):
+class Translator:
+    def __init__(self, sync: bytes):
         self.sync: bytes = sync
-        self.data_size: int = data_size
         self.sync_size = len(sync)
-        self.message_size = self.sync_size + data_size
         self.input_so_far: bytes = b''
+
+    def translate(self, input_bytes: bytes) -> List[bytes]:
+        pass
+
+
+class FixedTranslator(Translator):
+    def __init__(self, sync: bytes, data_size: int):
+        super().__init__(sync)
+        self.data_size: int = data_size
+        self.message_size = self.sync_size + data_size
 
     def translate(self, input_bytes: bytes) -> List[bytes]:
         self.input_so_far += input_bytes
@@ -27,11 +35,10 @@ class FixedTranslator:
         return res
 
 
-class OffsetTranslator:
+class OffsetTranslator(Translator):
     def __init__(self, sync: bytes, offset_size: int):
-        self.sync: bytes = sync
+        super().__init__(sync)
         self.offset_size: int = offset_size
-        self.input_so_far: bytes = b''
 
     def translate(self, input_bytes: bytes) -> List[bytes]:
         self.input_so_far += input_bytes
@@ -42,11 +49,10 @@ class OffsetTranslator:
         return splited_so_far
 
 
-class EndseqTranslator:
+class EndseqTranslator(Translator):
     def __init__(self, sync: bytes, endseq: bytes):
-        self.sync: bytes = sync
+        super().__init__(sync)
         self.endseq: bytes = endseq
-        self.input_so_far: bytes = b''
         self.pattern: bytes = self.sync+b'(.*)'+self.endseq
 
     def translate(self, input_bytes: bytes) -> List[bytes]:
