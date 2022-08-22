@@ -1,5 +1,5 @@
 import re
-from Translators import EndseqTranslator, FixedTranslator, OffsetTranslator
+from src.Translators import EndseqTranslator, FixedTranslator, OffsetTranslator
 import argparse
 
 
@@ -17,11 +17,11 @@ Message type supports the following:
 """
 
 
-def read_hex(msg: str) -> str:
+def read_hex(msg: str) -> bytes:
     while True:
         s = input(msg)
         if not s:
-            return None
+            raise Exception("empty input")
         match = re.search(r'0x[0-9a-fA-F]+', s)
         if match and match[0] == s:
             if len(s) % 2 != 0:
@@ -59,8 +59,10 @@ def main():
     else:
         return 0
     while True:
-        input_bytes: bytes = read_hex("Please enter input:\n")
-        if not input_bytes:
+        try:
+            input_bytes: bytes = read_hex(
+                "Please enter input:\n")
+        except Exception as _:
             break
         outputs = translator.translate(input_bytes)
         outputs = ['0x' + o.hex() for o in outputs]
