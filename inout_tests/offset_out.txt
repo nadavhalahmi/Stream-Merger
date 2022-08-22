@@ -1,0 +1,5 @@
+Please enter sync bytes:
+Please enter offset size:
+Please enter input:
+outputs: ['0x074d679b']
+Please enter input:
