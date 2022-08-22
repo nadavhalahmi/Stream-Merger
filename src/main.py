@@ -1,3 +1,4 @@
+import re
 from Translators import EndseqTranslator, FixedTranslator, OffsetTranslator
 import argparse
 
@@ -16,6 +17,28 @@ Message type supports the following:
 """
 
 
+def read_hex(msg: str) -> str:
+    while True:
+        s = input(msg)
+        if not s:
+            return None
+        match = re.search(r'0x[0-9a-fA-F]+', s)
+        if match and match[0] == s:
+            if len(s) % 2 != 0:
+                s = f'0x0{s[2:]}'
+            return bytes.fromhex(s[2:])
+        print("FORMAT: 0xDEADBEEF")
+
+
+def read_int(msg: str) -> int:
+    while True:
+        s = input(msg)
+        match = re.search(r'[1-9]\d*', s)
+        if match and match[0] == s:
+            return int(s)
+        print("FORMAT: {1,2,...}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter, epilog=message_type_descriptions())
@@ -23,21 +46,20 @@ def main():
                         fixed_str, offset_str, endseq_str], help='Arg choice.  See the choices options below')
     args = parser.parse_args()
     message_type = args.message_type
-    sync: bytes = bytes.fromhex(input("Please enter sync bytes:\n")[2:])
+    sync: bytes = read_hex("Please enter sync bytes:\n")
     if message_type == fixed_str:
-        data_size: int = int(input("Please enter data size:\n"))
+        data_size: int = read_int("Please enter data size:\n")
         translator = FixedTranslator(sync, data_size)
     elif message_type == offset_str:
-        offset_size: int = int(input("Please enter offset size:\n"))
+        offset_size: int = read_int("Please enter offset size:\n")
         translator = OffsetTranslator(sync, offset_size)
     elif message_type == endseq_str:
-        endseq: bytes = bytes.fromhex(
-            input("Please enter end sequence:\n")[2:])
+        endseq: bytes = read_hex("Please enter end sequence:\n")
         translator = EndseqTranslator(sync, endseq)
     else:
         return 0
     while True:
-        input_bytes: bytes = bytes.fromhex(input("Please enter input:\n")[2:])
+        input_bytes: bytes = read_hex("Please enter input:\n")
         if not input_bytes:
             break
         outputs = translator.translate(input_bytes)
