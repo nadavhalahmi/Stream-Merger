@@ -79,7 +79,7 @@ class EndseqTranslator(Translator):
                     sync_window[1], sync_window[1]+self.endseq_size)
                 while endseq_window[1] <= len(self.input_so_far):
                     if self.input_so_far[endseq_window[0]:endseq_window[1]] == self.endseq:
-                        data = self.input_so_far[sync_window[1]                                                 :endseq_window[0]]
+                        data = self.input_so_far[sync_window[1]:endseq_window[0]]
                         res.append(data)
                         break
                     else:

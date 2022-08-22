@@ -92,7 +92,7 @@ def long_data_size(long_sync_size) -> int:
 
 @pytest.fixture
 def long_rand_sync(long_sync_size: int) -> bytes:
-    '''bytes [0-!(33))(exclusive), size=long_sync_size'''
+    """bytes [0-!(33))(exclusive), size=long_sync_size"""
     sync: bytes = b''
     for _ in range(long_sync_size):
         sync += randint(0, 32).to_bytes(1, 'big')
@@ -123,5 +123,5 @@ def rand_bytes(prefix_no_sync: bytes) -> bytes:
 
 
 @pytest.fixture
-def fixed_translator_long(long_rand_sync: bytes, long_data_size: int) -> int:
+def fixed_translator_long(long_rand_sync: bytes, long_data_size: int) -> FixedTranslator:
     return FixedTranslator(long_rand_sync, long_data_size)

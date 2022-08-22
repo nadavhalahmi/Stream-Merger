@@ -1,5 +1,4 @@
 from Translators import EndseqTranslator, FixedTranslator, OffsetTranslator, Translator
-from typing import List, Optional
 import argparse
 
 
@@ -24,7 +23,6 @@ def main():
                         fixed_str, offset_str, endseq_str], help='Arg choice.  See the choices options below')
     args = parser.parse_args()
     message_type = args.message_type
-    translator: Optional[Translator] = None
     sync: bytes = input("Please enter sync bytes:\n").encode()
     if message_type == fixed_str:
         data_size: int = int(input("Please enter data size:\n"))
@@ -37,7 +35,6 @@ def main():
         translator = EndseqTranslator(sync, endseq)
     else:
         return 0
-    outputs: List[bytes] = []
     while True:
         input_bytes: bytes = input("Please enter input:\n").encode()
         if not input_bytes:
