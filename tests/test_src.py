@@ -30,3 +30,10 @@ def test_4_inputs_3_outputs(fixed_translator: FixedTranslator, inputs_4: List[by
         basic_output, basic_output]
     assert fixed_translator.translate(inputs_4[3]) == [
         basic_output, basic_output, basic_output]
+
+
+def test_input_is_sync(fixed_translator: FixedTranslator, basic_sync: bytes, basic_data_size: int) -> None:
+    basic_input_size = len(basic_sync) + basic_data_size
+    input_full_of_sync = (basic_sync*basic_input_size)[:basic_input_size]
+    assert fixed_translator.translate(input_full_of_sync) == [
+        input_full_of_sync[len(basic_sync):]]
