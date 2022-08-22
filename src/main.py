@@ -1,4 +1,4 @@
-from Translators import EndseqTranslator, FixedTranslator, OffsetTranslator, Translator
+from Translators import EndseqTranslator, FixedTranslator, OffsetTranslator
 import argparse
 
 
@@ -23,7 +23,7 @@ def main():
                         fixed_str, offset_str, endseq_str], help='Arg choice.  See the choices options below')
     args = parser.parse_args()
     message_type = args.message_type
-    sync: bytes = input("Please enter sync bytes:\n").encode()
+    sync: bytes = bytes.fromhex(input("Please enter sync bytes:\n")[2:])
     if message_type == fixed_str:
         data_size: int = int(input("Please enter data size:\n"))
         translator = FixedTranslator(sync, data_size)
@@ -31,16 +31,18 @@ def main():
         offset_size: int = int(input("Please enter offset size:\n"))
         translator = OffsetTranslator(sync, offset_size)
     elif message_type == endseq_str:
-        endseq: bytes = input("Please enter end sequence:\n").encode()
+        endseq: bytes = bytes.fromhex(
+            input("Please enter end sequence:\n")[2:])
         translator = EndseqTranslator(sync, endseq)
     else:
         return 0
     while True:
-        input_bytes: bytes = input("Please enter input:\n").encode()
+        input_bytes: bytes = bytes.fromhex(input("Please enter input:\n")[2:])
         if not input_bytes:
             break
         outputs = translator.translate(input_bytes)
-        print(outputs)
+        outputs = ['0x' + o.hex() for o in outputs]
+        print("outputs:", outputs)
 
 
 if __name__ == '__main__':
