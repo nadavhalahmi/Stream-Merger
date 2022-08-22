@@ -37,10 +37,10 @@ class EndseqTranslator:
         self.sync: bytes = sync
         self.endseq: bytes = endseq
         self.input_so_far: bytes = b''
-        self.pattern: str = rf'{self.sync}.*{self.endseq}'
+        self.pattern: bytes = self.sync+b'(.*)'+self.endseq
 
     def translate(self, input_bytes: bytes) -> List[bytes]:
         self.input_so_far += input_bytes
         splited_so_far: List[bytes] = re.findall(
-            self.pattern, self.input_so_far.decode())
+            self.pattern, self.input_so_far)
         return splited_so_far
