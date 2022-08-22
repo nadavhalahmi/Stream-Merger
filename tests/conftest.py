@@ -1,3 +1,4 @@
+from random import randint
 import pytest
 from typing import List
 from src import FixedTranslator, OffsetTranslator
@@ -77,3 +78,50 @@ def endseq_input() -> bytes:
 @pytest.fixture
 def endseq() -> bytes:
     return b'@@@'
+
+
+@pytest.fixture
+def long_sync_size() -> int:
+    return 40
+
+
+@pytest.fixture
+def long_data_size(long_sync_size) -> int:
+    return long_sync_size*3
+
+
+@pytest.fixture
+def long_rand_sync(long_sync_size: int) -> bytes:
+    '''bytes [0-!(33))(exclusive), size=long_sync_size'''
+    sync: bytes = b''
+    for _ in range(long_sync_size):
+        sync += randint(0, 32).to_bytes(1, 'big')
+    return sync
+
+
+@pytest.fixture
+def prefix_no_sync(long_sync_size: int) -> bytes:
+    prefix: bytes = b''
+    for _ in range(2):
+        for _ in range(long_sync_size-1):
+            prefix += randint(0, 32).to_bytes(1, 'big')
+        prefix += (33).to_bytes(1, 'big')
+    return prefix
+
+
+@pytest.fixture
+def rand_data(long_data_size: int) -> bytes:
+    rand_data: bytes = b''
+    for _ in range(long_data_size):
+        rand_data += randint(0, 33).to_bytes(1, 'big')
+    return rand_data
+
+
+@pytest.fixture
+def rand_bytes(prefix_no_sync: bytes) -> bytes:
+    return prefix_no_sync
+
+
+@pytest.fixture
+def fixed_translator_long(long_rand_sync: bytes, long_data_size: int) -> int:
+    return FixedTranslator(long_rand_sync, long_data_size)
