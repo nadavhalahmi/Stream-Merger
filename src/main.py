@@ -33,7 +33,7 @@ def main():
         offset_size: int = int(input("Please enter offset size:\n"))
         translator = OffsetTranslator(sync, offset_size)
     elif message_type == endseq_str:
-        endseq: bytes = input("Please enter end sequence:\n")
+        endseq: bytes = input("Please enter end sequence:\n").encode()
         translator = EndseqTranslator(sync, endseq)
     else:
         return 0
