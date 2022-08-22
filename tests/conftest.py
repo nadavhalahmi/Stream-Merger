@@ -1,6 +1,7 @@
 import pytest
 from typing import List
 from src import FixedTranslator, OffsetTranslator
+from src.Translators import EndseqTranslator
 
 
 @pytest.fixture
@@ -61,3 +62,18 @@ def offset_input() -> bytes:
 @pytest.fixture
 def offset_size() -> int:
     return 2
+
+
+@pytest.fixture
+def endseq_translator(basic_sync: bytes, endseq: bytes) -> EndseqTranslator:
+    return EndseqTranslator(basic_sync, endseq)
+
+
+@pytest.fixture
+def endseq_input() -> bytes:
+    return b'!!123@@@'
+
+
+@pytest.fixture
+def endseq() -> bytes:
+    return b'@@@'
