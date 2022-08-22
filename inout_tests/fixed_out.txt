@@ -1,0 +1,11 @@
+Please enter sync bytes:
+Please enter data size:
+Please enter input:
+outputs: ['0x67f21a']
+Please enter input:
+outputs: ['0x67f21a']
+Please enter input:
+outputs: ['0x67f21a', '0x39a2dd']
+Please enter input:
+outputs: ['0x67f21a', '0x39a2dd', '0x3dace2']
+Please enter input:
