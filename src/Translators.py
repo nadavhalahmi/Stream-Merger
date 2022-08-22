@@ -42,11 +42,24 @@ class OffsetTranslator(Translator):
 
     def translate(self, input_bytes: bytes) -> List[bytes]:
         self.input_so_far += input_bytes
-        splited_so_far: List[bytes] = self.input_so_far.split(self.sync)[1:]
-        splited_so_far = list(
-            filter(lambda x: x, map(
-                lambda s: s[self.offset_size:self.offset_size + s[self.offset_size-1]], splited_so_far)))  # TODO: fix
-        return splited_so_far
+        if self.sync_size + self.offset_size > len(self.input_so_far):
+            return []  # input_so_far can't even hold sync+offset, surly can't hold data too
+        window = (0, self.sync_size)
+        res: List[bytes] = []
+        while window[1] + self.offset_size - 1 < len(self.input_so_far):
+            if self.input_so_far[window[0]:window[1]] == self.sync:
+                data_size = int(
+                    self.input_so_far[window[1] + self.offset_size - 1])
+                msg_size = self.sync_size + self.offset_size+data_size
+                if window[1] + self.offset_size+data_size > len(self.input_so_far):
+                    return res
+                res.append(
+                    self.input_so_far[window[1] + self.offset_size:window[1] + self.offset_size + data_size])
+                window = (window[0] + msg_size,
+                          window[1] + msg_size)
+            else:
+                window = (window[0] + 1, window[1] + 1)
+        return res
 
 
 class EndseqTranslator(Translator):
