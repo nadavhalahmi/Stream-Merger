@@ -1,5 +1,5 @@
 import re
-from src.Translators import EndseqTranslator, FixedTranslator, OffsetTranslator
+from Translators import EndseqTranslator, FixedTranslator, OffsetTranslator
 import argparse
 
 
