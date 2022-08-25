@@ -1,8 +1,7 @@
 from random import randint
 import pytest
 from typing import List
-from src import FixedTranslator, OffsetTranslator
-from src.Translators import EndseqTranslator
+from src.Translators import FixedTranslator, OffsetTranslator, EndseqTranslator
 
 
 @pytest.fixture
