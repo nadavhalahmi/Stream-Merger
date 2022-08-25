@@ -6,6 +6,7 @@ class Translator:
     Used as basic Translator.
     @param sync: sync bytes for messages. Represents start of message.
     """
+
     def __init__(self, sync: bytes):
         self.sync: bytes = sync
         self.sync_size = len(sync)
@@ -27,6 +28,7 @@ class FixedTranslator(Translator):
     @param sync: as in Translator
     @param data_size: size of data after sync. data after data_size is ignored until next sync
     """
+
     def __init__(self, sync: bytes, data_size: int):
         super().__init__(sync)
         self.data_size: int = data_size
@@ -63,6 +65,7 @@ class OffsetTranslator(Translator):
     @param sync: as in Translator
     @param offset_size: offset to size of message
     """
+
     def __init__(self, sync: bytes, offset_size: int):
         super().__init__(sync)
         self.offset_size: int = offset_size
@@ -83,15 +86,15 @@ class OffsetTranslator(Translator):
             if self.input_so_far[window[0]:window[1]] == self.sync:
                 data_size = int(
                     self.input_so_far[window[1] + self.offset_size - 1])
-                msg_size = self.sync_size + self.offset_size+data_size
+                message_size = self.sync_size + self.offset_size+data_size
                 if window[1] + self.offset_size+data_size > len(self.input_so_far):
                     self.input_so_far = self.input_so_far[last_output+1:]
                     return self.outputs_so_far
                 self.outputs_so_far.append(
                     self.input_so_far[window[1] + self.offset_size:window[1] + self.offset_size + data_size])
-                last_output = window[0] + msg_size - 1
-                window = (window[0] + msg_size,
-                          window[1] + msg_size)
+                last_output = window[0] + message_size - 1
+                window = (window[0] + message_size,
+                          window[1] + message_size)
             else:
                 window = (window[0] + 1, window[1] + 1)
         self.input_so_far = self.input_so_far[last_output+1:]
@@ -105,6 +108,7 @@ class EndseqTranslator(Translator):
     @param sync: as in Translator
     @param endseq: a sequence of bytes representing end of message.
     """
+
     def __init__(self, sync: bytes, endseq: bytes):
         super().__init__(sync)
         self.endseq: bytes = endseq
@@ -128,7 +132,7 @@ class EndseqTranslator(Translator):
                     sync_window[1], sync_window[1]+self.endseq_size)
                 while endseq_window[1] <= len(self.input_so_far):
                     if self.input_so_far[endseq_window[0]:endseq_window[1]] == self.endseq:
-                        data = self.input_so_far[sync_window[1]:endseq_window[0]]
+                        data = self.input_so_far[sync_window[1]                                                 :endseq_window[0]]
                         self.outputs_so_far.append(data)
                         last_output = endseq_window[1]-1
                         break

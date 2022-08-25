@@ -19,13 +19,13 @@ Message type supports the following:
 """
 
 
-def read_hex(msg: str) -> bytes:
+def read_hex(message: str) -> bytes:
     """
-    @param msg: the message to be shown to the user
+    @param message: the message to be shown to the user
     @return: this function receives input in format 0xDEADBEEF and return it as `bytes`
     """
     while True:
-        s = input(msg)
+        s = input(message)
         if not s:
             raise Exception("empty input")
         match = re.search(r'0x[0-9a-fA-F]+', s)
@@ -36,13 +36,13 @@ def read_hex(msg: str) -> bytes:
         print("FORMAT: 0xDEADBEEF")
 
 
-def read_int(msg: str) -> int:
+def read_int(message: str) -> int:
     """
-    @param msg: as in read_hex
+    @param message: as in read_hex
     @return: receives positive integer input from user and return it as `int`
     """
     while True:
-        s = input(msg)
+        s = input(message)
         match = re.search(r'[1-9]\d*', s)
         if match and match[0] == s:
             return int(s)
