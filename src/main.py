@@ -1,5 +1,5 @@
 import re
-from Translators import EndseqTranslator, FixedTranslator, OffsetTranslator
+from Translators import EndseqTranslator, FixedTranslator, OffsetTranslator, Translator
 import argparse
 
 fixed_str = 'fixed'
@@ -49,17 +49,11 @@ def read_int(msg: str) -> int:
         print("FORMAT: {1,2,...}")
 
 
-def main():
+def set_translator(message_type: str) -> Translator:
+    f"""
+    @param message_type: one of {fixed_str, offset_str, endseq_str}
+    @return: receives sync from user and another translator based input and returns a translator
     """
-    reads sync bytes from the user, and then selects translator based on command line argument.
-    translates input until EOF.
-    """
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.RawTextHelpFormatter, epilog=message_type_descriptions())
-    parser.add_argument('message_type', type=str, choices=[
-        fixed_str, offset_str, endseq_str], help='Arg choice.  See the choices options below')
-    args = parser.parse_args()
-    message_type = args.message_type
     sync: bytes = read_hex("Please enter sync bytes:\n")
     if message_type == fixed_str:
         data_size: int = read_int("Please enter data size:\n")
@@ -71,7 +65,15 @@ def main():
         endseq: bytes = read_hex("Please enter end sequence:\n")
         translator = EndseqTranslator(sync, endseq)
     else:
-        return
+        raise Exception("bad message_type")
+    return translator
+
+
+def input_loop(translator: Translator):
+    """
+    reads input from user until EOF
+    @param translator: translator to be used for translate user input
+    """
     while True:
         try:
             input_bytes: bytes = read_hex(
@@ -81,6 +83,22 @@ def main():
         outputs = translator.translate(input_bytes)
         outputs = ['0x' + o.hex() for o in outputs]
         print("outputs:", outputs)
+
+
+def main():
+    """
+    reads sync bytes from the user, and then selects translator based on command line argument.
+    translates input until EOF.
+    """
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawTextHelpFormatter, epilog=message_type_descriptions())
+    parser.add_argument('message_type', type=str, choices=[
+        fixed_str, offset_str, endseq_str], help='Arg choice.  See the choices options below')
+    args = parser.parse_args()
+    message_type = args.message_type
+
+    translator: Translator = set_translator(message_type)
+    input_loop(translator)
 
 
 if __name__ == '__main__':
