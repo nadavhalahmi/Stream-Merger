@@ -5,13 +5,8 @@ from src.Translators import FixedTranslator, OffsetTranslator, EndseqTranslator
 
 
 @pytest.fixture
-def fixed_translator(basic_sync: bytes, basic_data_size: int) -> FixedTranslator:
-    return FixedTranslator(basic_sync, basic_data_size)
-
-
-@pytest.fixture
-def basic_input() -> bytes:
-    return b'!!123'
+def fixed_translator(basic_sync: bytes, basic_output: bytes) -> FixedTranslator:
+    return FixedTranslator(basic_sync, len(basic_output))
 
 
 @pytest.fixture
@@ -25,28 +20,9 @@ def basic_output() -> bytes:
 
 
 @pytest.fixture
-def basic_data_size() -> int:
-    return 3
-
-
-@pytest.fixture
-def input_with_prefix() -> bytes:
-    return b'prefix!!123'
-
-
-@pytest.fixture
-def inputs_2() -> List[bytes]:
-    return [b'prefix!!123', b'45!!']
-
-
-@pytest.fixture
-def inputs_3() -> List[bytes]:
-    return [b'prefix!!123', b'45!!', b'12390!']
-
-
-@pytest.fixture
-def inputs_4() -> List[bytes]:
-    return [b'prefix!!123', b'45!!', b'12390!', b'!12345']
+def inputs(basic_sync: bytes, basic_output: bytes) -> List[bytes]:
+    return [b'prefix' + basic_sync + basic_output, b'45' + basic_sync, basic_output + b'90' + basic_sync[:1],
+            basic_sync[1:] + basic_output + b'45']
 
 
 @pytest.fixture
@@ -60,8 +36,8 @@ def offset_translator_long(long_rand_sync: bytes, offset_size: int) -> OffsetTra
 
 
 @pytest.fixture
-def offset_input() -> bytes:
-    return b'!!@\x03123'
+def offset_input(basic_sync: bytes, basic_output: bytes) -> bytes:
+    return basic_sync + b'@\x03' + basic_output
 
 
 @pytest.fixture
@@ -70,8 +46,8 @@ def offset_size() -> int:
 
 
 @pytest.fixture
-def endseq_translator(basic_sync: bytes, endseq: bytes) -> EndseqTranslator:
-    return EndseqTranslator(basic_sync, endseq)
+def endseq_translator(basic_sync: bytes, basic_endseq: bytes) -> EndseqTranslator:
+    return EndseqTranslator(basic_sync, basic_endseq)
 
 
 @pytest.fixture
@@ -80,12 +56,12 @@ def endseq_translator_sync_is_endseq(basic_sync: bytes) -> EndseqTranslator:
 
 
 @pytest.fixture
-def endseq_input() -> bytes:
-    return b'!!123@@@'
+def endseq_input(basic_sync: bytes, basic_endseq: bytes, basic_output: bytes) -> bytes:
+    return basic_sync + basic_output + basic_endseq
 
 
 @pytest.fixture
-def endseq() -> bytes:
+def basic_endseq() -> bytes:
     return b'@@@'
 
 
@@ -95,7 +71,7 @@ def long_sync_size() -> int:
 
 
 @pytest.fixture
-def long_data_size(long_sync_size) -> int:
+def long_data_size(long_sync_size: int) -> int:
     return long_sync_size*3
 
 
@@ -137,5 +113,5 @@ def fixed_translator_long(long_rand_sync: bytes, long_data_size: int) -> FixedTr
 
 
 @pytest.fixture
-def fixed_translator_long_sync(long_rand_sync: bytes, basic_data_size: int) -> FixedTranslator:
-    return FixedTranslator(long_rand_sync, basic_data_size)
+def fixed_translator_long_sync(long_rand_sync: bytes, basic_output: bytes) -> FixedTranslator:
+    return FixedTranslator(long_rand_sync, len(basic_output))
