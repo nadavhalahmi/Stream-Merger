@@ -2,13 +2,15 @@ import re
 from Translators import EndseqTranslator, FixedTranslator, OffsetTranslator
 import argparse
 
-
 fixed_str = 'fixed'
 offset_str = 'offset'
 endseq_str = 'endseq'
 
 
 def message_type_descriptions():
+    """
+    Description for main parser. Output of `python3 main.py -h` command.
+    """
     return f"""
 Message type supports the following:
    {fixed_str}           - fixed message size
@@ -18,6 +20,10 @@ Message type supports the following:
 
 
 def read_hex(msg: str) -> bytes:
+    """
+    @param msg: the message to be shown to the user
+    @return: this function receives input in format 0xDEADBEEF and return it as `bytes`
+    """
     while True:
         s = input(msg)
         if not s:
@@ -31,6 +37,10 @@ def read_hex(msg: str) -> bytes:
 
 
 def read_int(msg: str) -> int:
+    """
+    @param msg: as in read_hex
+    @return: receives positive integer input from user and return it as `int`
+    """
     while True:
         s = input(msg)
         match = re.search(r'[1-9]\d*', s)
@@ -40,10 +50,14 @@ def read_int(msg: str) -> int:
 
 
 def main():
+    """
+    reads sync bytes from the user, and then selects translator based on command line argument.
+    translates input until EOF.
+    """
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter, epilog=message_type_descriptions())
     parser.add_argument('message_type', type=str, choices=[
-                        fixed_str, offset_str, endseq_str], help='Arg choice.  See the choices options below')
+        fixed_str, offset_str, endseq_str], help='Arg choice.  See the choices options below')
     args = parser.parse_args()
     message_type = args.message_type
     sync: bytes = read_hex("Please enter sync bytes:\n")
@@ -57,12 +71,12 @@ def main():
         endseq: bytes = read_hex("Please enter end sequence:\n")
         translator = EndseqTranslator(sync, endseq)
     else:
-        return 0
+        return
     while True:
         try:
             input_bytes: bytes = read_hex(
                 "Please enter input:\n")
-        except Exception as _:
+        except Exception as _:  # reached EOF
             break
         outputs = translator.translate(input_bytes)
         outputs = ['0x' + o.hex() for o in outputs]
