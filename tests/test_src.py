@@ -50,3 +50,9 @@ def test_random_long(fixed_translator_long: FixedTranslator, prefix_no_sync: byt
             full_msg[window_start: window_start+10])
         window_start += 10
     assert output == [rand_data]*many_times
+
+
+def test_long_sync(fixed_translator_long_sync: FixedTranslator, long_rand_sync: bytes, basic_output: bytes) -> None:
+    msg = long_rand_sync + basic_output
+    assert fixed_translator_long_sync.data_size == len(basic_output)
+    assert fixed_translator_long_sync.translate(msg) == [basic_output]

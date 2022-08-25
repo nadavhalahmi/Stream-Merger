@@ -125,3 +125,8 @@ def rand_bytes(prefix_no_sync: bytes) -> bytes:
 @pytest.fixture
 def fixed_translator_long(long_rand_sync: bytes, long_data_size: int) -> FixedTranslator:
     return FixedTranslator(long_rand_sync, long_data_size)
+
+
+@pytest.fixture
+def fixed_translator_long_sync(long_rand_sync: bytes, basic_data_size: int) -> FixedTranslator:
+    return FixedTranslator(long_rand_sync, basic_data_size)
