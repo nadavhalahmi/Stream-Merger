@@ -56,6 +56,11 @@ def offset_translator(basic_sync: bytes, offset_size: int) -> OffsetTranslator:
 
 
 @pytest.fixture
+def offset_translator_long(long_rand_sync: bytes, offset_size: int) -> OffsetTranslator:
+    return OffsetTranslator(long_rand_sync, offset_size)
+
+
+@pytest.fixture
 def offset_input() -> bytes:
     return b'!!@\x03123'
 
