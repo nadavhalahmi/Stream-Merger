@@ -76,6 +76,11 @@ def endseq_translator(basic_sync: bytes, endseq: bytes) -> EndseqTranslator:
 
 
 @pytest.fixture
+def endseq_translator_sync_is_endseq(basic_sync: bytes) -> EndseqTranslator:
+    return EndseqTranslator(basic_sync, basic_sync)
+
+
+@pytest.fixture
 def endseq_input() -> bytes:
     return b'!!123@@@'
 
