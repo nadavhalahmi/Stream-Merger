@@ -12,24 +12,24 @@ def test_ignore_first_bytes(fixed_translator: FixedTranslator, basic_output: byt
         b'prefix' + fixed_translator.sync + basic_output) == [basic_output]
 
 
-def test_2_inputs_1_output(fixed_translator: FixedTranslator, inputs: List[bytes], basic_output: bytes) -> None:
-    assert fixed_translator.translate(inputs[0]) == [basic_output]
-    assert fixed_translator.translate(inputs[1]) == [basic_output]
+def test_2_inputs_1_output(fixed_translator: FixedTranslator, fixed_inputs: List[bytes], basic_output: bytes) -> None:
+    assert fixed_translator.translate(fixed_inputs[0]) == [basic_output]
+    assert fixed_translator.translate(fixed_inputs[1]) == [basic_output]
 
 
-def test_3_inputs_2_outputs(fixed_translator: FixedTranslator, inputs: List[bytes], basic_output: bytes) -> None:
-    assert fixed_translator.translate(inputs[0]) == [basic_output]
-    assert fixed_translator.translate(inputs[1]) == [basic_output]
-    assert fixed_translator.translate(inputs[2]) == [
+def test_3_inputs_2_outputs(fixed_translator: FixedTranslator, fixed_inputs: List[bytes], basic_output: bytes) -> None:
+    assert fixed_translator.translate(fixed_inputs[0]) == [basic_output]
+    assert fixed_translator.translate(fixed_inputs[1]) == [basic_output]
+    assert fixed_translator.translate(fixed_inputs[2]) == [
         basic_output, basic_output]
 
 
-def test_4_inputs_3_outputs(fixed_translator: FixedTranslator, inputs: List[bytes], basic_output: bytes) -> None:
-    assert fixed_translator.translate(inputs[0]) == [basic_output]
-    assert fixed_translator.translate(inputs[1]) == [basic_output]
-    assert fixed_translator.translate(inputs[2]) == [
+def test_4_inputs_3_outputs(fixed_translator: FixedTranslator, fixed_inputs: List[bytes], basic_output: bytes) -> None:
+    assert fixed_translator.translate(fixed_inputs[0]) == [basic_output]
+    assert fixed_translator.translate(fixed_inputs[1]) == [basic_output]
+    assert fixed_translator.translate(fixed_inputs[2]) == [
         basic_output, basic_output]
-    assert fixed_translator.translate(inputs[3]) == [
+    assert fixed_translator.translate(fixed_inputs[3]) == [
         basic_output, basic_output, basic_output]
 
 
@@ -42,10 +42,12 @@ def test_input_is_sync(fixed_translator: FixedTranslator) -> None:
         input_full_of_sync[len(fixed_translator.sync):]]
 
 
-def test_random_long(fixed_translator_long: FixedTranslator, prefix_no_sync: bytes, long_rand_sync: bytes, rand_data: bytes, rand_bytes: bytes) -> None:
+def test_random_long(fixed_translator_long: FixedTranslator, rand_bytes_no_sync: bytes, rand_bytes: bytes, long_rand_sync: bytes) -> None:
     many_times = 10
-    full_message = prefix_no_sync + \
-        (long_rand_sync+rand_data+rand_bytes)*many_times
+    data_size = fixed_translator_long.data_size
+    rand_data = (rand_bytes*data_size)[:data_size]
+    full_message = rand_bytes_no_sync + \
+        (long_rand_sync + rand_data + rand_bytes)*many_times
     window_start = 0
     output = []
     while full_message[window_start: window_start+10]:

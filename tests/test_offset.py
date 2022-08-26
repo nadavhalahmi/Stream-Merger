@@ -16,18 +16,18 @@ def test_input_is_sync(offset_translator: OffsetTranslator) -> None:
     assert offset_translator.translate(message) == [sync * 2]
 
 
-def test_random_long(offset_translator_long: OffsetTranslator, prefix_no_sync: bytes, long_rand_sync: bytes, rand_data: bytes, rand_bytes: bytes) -> None:
+def test_random_long(offset_translator_long: OffsetTranslator, rand_bytes_no_sync: bytes, long_rand_sync: bytes, rand_bytes: bytes) -> None:
     assert len(rand_bytes) >= offset_translator_long.offset
     data_size = 20
-    assert len(rand_data) >= data_size
+    assert len(rand_bytes_no_sync) >= data_size
     many_times = 10
-    full_message = prefix_no_sync + \
+    full_message = rand_bytes_no_sync + \
         (long_rand_sync + rand_bytes[:offset_translator_long.offset - 1] +
-         data_size.to_bytes(1, 'big') + rand_data[:data_size] + rand_bytes)*many_times
+         data_size.to_bytes(1, 'big') + rand_bytes_no_sync[:data_size] + rand_bytes)*many_times
     window_start = 0
     output = []
     while full_message[window_start: window_start+10]:
         output = offset_translator_long.translate(
             full_message[window_start: window_start+10])
         window_start += 10
-    assert output == [rand_data[:data_size]]*many_times
+    assert output == [rand_bytes_no_sync[:data_size]]*many_times
