@@ -81,26 +81,27 @@ class OffsetTranslator(Translator):
         @return: as in Translator
         """
         self.input_so_far += input_bytes
-        window = (0, self.sync_size)
+        input_bits = BitArray(self.input_so_far)
+        window = (0, self.sync_size * 8)
         last_output = -1
-        while window[1] + self.offset - 1 < len(self.input_so_far):
-            if self.input_so_far[window[0]:window[1]] == self.sync:
-                data_size = int(
-                    self.input_so_far[window[1] + self.offset - 1])
-                message_size = self.sync_size + self.offset + data_size
+        while window[1] + self.offset * 8 - 1 < len(input_bits):
+            if input_bits[window[0]:window[1]] == self.sync:
+                data_size = (
+                    input_bits[window[1] + (self.offset - 1) * 8:window[1] + (self.offset - 1) * 8 + 8]).int
+                message_size = self.sync_size * 8 + self.offset * 8 + data_size * 8
                 # no room for a message
-                if window[1] + self.offset+data_size > len(self.input_so_far):
-                    self.input_so_far = self.input_so_far[last_output+1:]
+                if window[1] + self.offset * 8 + data_size * 8 > len(input_bits):
+                    self.input_so_far = input_bits[last_output+1:]
                     return self.outputs_so_far
                 # add data to outputs_so_far
                 self.outputs_so_far.append(
-                    self.input_so_far[window[1] + self.offset:window[1] + self.offset + data_size])
-                last_output = window[0] + message_size - 1
-                window = (window[0] + message_size,
-                          window[1] + message_size)
+                    input_bits[window[1] + self.offset * 8:window[1] + self.offset * 8 + data_size * 8])
+                last_output = window[0] + message_size * 8 - 1
+                window = (window[0] + message_size * 8,
+                          window[1] + message_size * 8)
             else:
                 window = (window[0] + 1, window[1] + 1)
-        self.input_so_far = self.input_so_far[last_output+1:]
+        self.input_so_far = input_bits[last_output+1:]
         return self.outputs_so_far
 
 
@@ -136,7 +137,8 @@ class EndseqTranslator(Translator):
                     sync_window[1], sync_window[1]+self.endseq_size)
                 while endseq_window[1] - 1 < len(self.input_so_far):
                     if self.input_so_far[endseq_window[0]:endseq_window[1]] == self.endseq:
-                        data = self.input_so_far[sync_window[1]:endseq_window[0]]
+                        data = self.input_so_far[sync_window[1]
+                            :endseq_window[0]]
                         self.outputs_so_far.append(data)
                         last_output = endseq_window[1]-1
                         break
