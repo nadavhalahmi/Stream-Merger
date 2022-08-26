@@ -72,26 +72,20 @@ class OffsetTranslator(Translator):
         @return: as in Translator
         """
         self.input_so_far += input_bytes
-        window = (0, self.sync_size)
-        last_output = -1
-        while window[1] + self.offset - 1 < len(self.input_so_far):
-            if self.input_so_far[window[0]:window[1]] == self.sync:
-                data_size = int(
-                    self.input_so_far[window[1] + self.offset - 1])
-                message_size = self.sync_size + self.offset + data_size
-                # no room for a message
-                if window[1] + self.offset+data_size > len(self.input_so_far):
-                    self.input_so_far = self.input_so_far[last_output+1:]
-                    return self.outputs_so_far
-                # add data to outputs_so_far
-                self.outputs_so_far.append(
-                    self.input_so_far[window[1] + self.offset:window[1] + self.offset + data_size])
-                last_output = window[0] + message_size - 1
-                window = (window[0] + message_size,
-                          window[1] + message_size)
-            else:
-                window = (window[0] + 1, window[1] + 1)
-        self.input_so_far = self.input_so_far[last_output+1:]
+        curr_sync = self.input_so_far.find(self.sync)
+        while curr_sync != -1 and curr_sync + self.sync_size + self.offset - 1 < len(self.input_so_far):
+            data_size = int(
+                self.input_so_far[curr_sync + self.sync_size + self.offset - 1])
+            data_range = (curr_sync + self.sync_size + self.offset,
+                          curr_sync + self.sync_size + self.offset + data_size)
+            # no room for a message
+            if data_range[1] > len(self.input_so_far):
+                return self.outputs_so_far
+            # add data to outputs_so_far
+            self.outputs_so_far.append(
+                self.input_so_far[data_range[0]:data_range[1]])
+            self.input_so_far = self.input_so_far[data_range[1]:]
+            curr_sync = self.input_so_far.find(self.sync)
         return self.outputs_so_far
 
 
@@ -127,8 +121,7 @@ class EndseqTranslator(Translator):
                     sync_window[1], sync_window[1]+self.endseq_size)
                 while endseq_window[1] - 1 < len(self.input_so_far):
                     if self.input_so_far[endseq_window[0]:endseq_window[1]] == self.endseq:
-                        data = self.input_so_far[sync_window[1]
-                            :endseq_window[0]]
+                        data = self.input_so_far[sync_window[1]                                                 :endseq_window[0]]
                         self.outputs_so_far.append(data)
                         last_output = endseq_window[1]-1
                         break
