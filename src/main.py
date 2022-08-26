@@ -19,20 +19,21 @@ Message type supports the following:
 """
 
 
-def read_hex(message: str) -> bytes:
+def read_hex(message: str, accept_none: bool = False) -> bytes:
     """
     @param message: the message to be shown to the user
     @return: this function receives input in format 0xDEADBEEF and return it as `bytes`
     """
     while True:
         s = input(message)
-        if not s:
+        if s:
+            match = re.search(r'0x[0-9a-fA-F]+', s)
+            if match and match[0] == s:
+                if len(s) % 2 != 0:
+                    s = f'0x0{s[2:]}'
+                return bytes.fromhex(s[2:])
+        elif accept_none:
             raise Exception("empty input")
-        match = re.search(r'0x[0-9a-fA-F]+', s)
-        if match and match[0] == s:
-            if len(s) % 2 != 0:
-                s = f'0x0{s[2:]}'
-            return bytes.fromhex(s[2:])
         print("FORMAT: 0xDEADBEEF")
 
 
@@ -77,7 +78,7 @@ def input_loop(translator: Translator):
     while True:
         try:
             input_bytes: bytes = read_hex(
-                "Please enter input:\n")
+                "Please enter input:\n", accept_none=True)
         except Exception as _:  # reached EOF
             break
         outputs = translator.translate(input_bytes)
