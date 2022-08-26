@@ -125,20 +125,20 @@ class EndseqTranslator(Translator):
         @return: as in Translator
         """
         self.input_so_far += input_bytes
+        input_bits = BitArray(self.input_so_far)
         if self.sync_size + self.endseq_size > len(self.input_so_far):
             # input_so_far can't even hold sync+endseq, surly can't hold data too
             return self.outputs_so_far
-        sync_window = (0, self.sync_size)
+        sync_window = (0, self.sync_size * 8)
         last_output = -1
-        while sync_window[1] - 1 < len(self.input_so_far):
-            if self.input_so_far[sync_window[0]:sync_window[1]] == self.sync:
+        while sync_window[1] - 1 < len(input_bits):
+            if input_bits[sync_window[0]:sync_window[1]] == self.sync:
                 # found sync, now find endseq
                 endseq_window = (
-                    sync_window[1], sync_window[1]+self.endseq_size)
-                while endseq_window[1] - 1 < len(self.input_so_far):
-                    if self.input_so_far[endseq_window[0]:endseq_window[1]] == self.endseq:
-                        data = self.input_so_far[sync_window[1]
-                            :endseq_window[0]]
+                    sync_window[1], sync_window[1]+self.endseq_size * 8)
+                while endseq_window[1] - 1 < len(input_bits):
+                    if input_bits[endseq_window[0]:endseq_window[1]] == self.endseq:
+                        data = input_bits[sync_window[1]:endseq_window[0]]
                         self.outputs_so_far.append(data)
                         last_output = endseq_window[1]-1
                         break
@@ -147,7 +147,7 @@ class EndseqTranslator(Translator):
                             endseq_window[0] + 1, endseq_window[1] + 1)
                 # sync_window will now point to after endseq
                 sync_window = (endseq_window[1],
-                               endseq_window[1] + self.sync_size)
+                               endseq_window[1] + self.sync_size * 8)
             else:
                 sync_window = (sync_window[0] + 1, sync_window[1] + 1)
         self.input_so_far = self.input_so_far[last_output+1:]
