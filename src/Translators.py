@@ -112,26 +112,19 @@ class EndseqTranslator(Translator):
         if self.sync_size + self.endseq_size > len(self.input_so_far):
             # input_so_far can't even hold sync+endseq, surly can't hold data too
             return self.outputs_so_far
-        sync_window = (0, self.sync_size)
-        last_output = -1
-        while sync_window[1] - 1 < len(self.input_so_far):
-            if self.input_so_far[sync_window[0]:sync_window[1]] == self.sync:
-                # found sync, now find endseq
-                endseq_window = (
-                    sync_window[1], sync_window[1]+self.endseq_size)
-                while endseq_window[1] - 1 < len(self.input_so_far):
-                    if self.input_so_far[endseq_window[0]:endseq_window[1]] == self.endseq:
-                        data = self.input_so_far[sync_window[1]                                                 :endseq_window[0]]
-                        self.outputs_so_far.append(data)
-                        last_output = endseq_window[1]-1
-                        break
-                    else:
-                        endseq_window = (
-                            endseq_window[0] + 1, endseq_window[1] + 1)
-                # sync_window will now point to after endseq
-                sync_window = (endseq_window[1],
-                               endseq_window[1] + self.sync_size)
+        curr_sync = self.input_so_far.find(self.sync)
+        while curr_sync != -1 and curr_sync + self.sync_size + self.endseq_size - 1 < len(self.input_so_far):
+            # found sync, now find endseq
+            curr_endseq = self.input_so_far[curr_sync +
+                                            self.sync_size:].find(self.endseq)
+            if curr_endseq != -1:  # found endseq after sync
+                data_range = (curr_sync + self.sync_size,
+                              curr_sync+self.sync_size+curr_endseq)
+                data = self.input_so_far[data_range[0]:data_range[1]]
+                self.outputs_so_far.append(data)
+                self.input_so_far = self.input_so_far[data_range[1] +
+                                                      self.endseq_size:]
             else:
-                sync_window = (sync_window[0] + 1, sync_window[1] + 1)
-        self.input_so_far = self.input_so_far[last_output+1:]
+                return self.outputs_so_far
+            curr_sync = self.input_so_far.find(self.sync)
         return self.outputs_so_far
