@@ -49,8 +49,8 @@ class FixedTranslator(Translator):
         # while we have enough room for a message
         while window[1] + self.data_size * 8 - 1 < len(input_bits):
             if input_bits[window[0]:window[1]] == self.sync:
-                self.outputs_so_far.append(
-                    input_bits[window[1]:window[1] + self.data_size*8])  # add data after sync
+                self.outputs_so_far.append((
+                    input_bits[window[1]:window[1] + self.data_size*8]).bytes)  # add data after sync
                 # point to last byte of last output
                 last_output = window[0] + self.message_size*8 - 1
                 window = (window[0] + self.message_size*8,
@@ -94,8 +94,8 @@ class OffsetTranslator(Translator):
                     self.input_so_far = input_bits[last_output+1:]
                     return self.outputs_so_far
                 # add data to outputs_so_far
-                self.outputs_so_far.append(
-                    input_bits[window[1] + self.offset * 8:window[1] + self.offset * 8 + data_size * 8])
+                self.outputs_so_far.append((
+                    input_bits[window[1] + self.offset * 8:window[1] + self.offset * 8 + data_size * 8]).bytes)
                 last_output = window[0] + message_size * 8 - 1
                 window = (window[0] + message_size * 8,
                           window[1] + message_size * 8)
@@ -139,7 +139,7 @@ class EndseqTranslator(Translator):
                 while endseq_window[1] - 1 < len(input_bits):
                     if input_bits[endseq_window[0]:endseq_window[1]] == self.endseq:
                         data = input_bits[sync_window[1]:endseq_window[0]]
-                        self.outputs_so_far.append(data)
+                        self.outputs_so_far.append(data.bytes)
                         last_output = endseq_window[1]-1
                         break
                     else:
