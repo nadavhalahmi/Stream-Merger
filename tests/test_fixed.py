@@ -62,5 +62,8 @@ def test_long_sync(fixed_translator_long_sync: FixedTranslator, long_rand_sync: 
 
 
 def test_bits(fixed_translator_bits_example: FixedTranslator) -> None:
+    """
+    see https://github.com/nadavhalahmi/Stream-Merger/issues/2
+    """
     assert fixed_translator_bits_example.translate(
         b'\x3F\xC0\x40\x40') == [b'\x01\x01']
