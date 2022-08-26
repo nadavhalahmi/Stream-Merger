@@ -41,6 +41,7 @@ nadavhalahmi@Nadav-T14:~/Stream-Merger$
 ## Tests
 ### Run tests using pytest:
 ```
+pip install pytest
 export PYTHONPATH=$PYTHONPATH:$PWD/src
 pytest tests
 ```
