@@ -104,6 +104,11 @@ def basic_endseq() -> bytes:
 
 
 @pytest.fixture
+def long_rand_endseq(long_rand_sync: bytes) -> bytes:
+    return long_rand_sync*2
+
+
+@pytest.fixture
 def endseq_input(basic_sync: bytes, basic_endseq: bytes, basic_output: bytes) -> bytes:
     return basic_sync + basic_output + basic_endseq
 
@@ -116,3 +121,8 @@ def endseq_translator(basic_sync: bytes, basic_endseq: bytes) -> EndseqTranslato
 @pytest.fixture
 def endseq_translator_sync_is_endseq(basic_sync: bytes) -> EndseqTranslator:
     return EndseqTranslator(basic_sync, basic_sync)
+
+
+@pytest.fixture
+def endseq_translator_long_rand(long_rand_sync: bytes, long_rand_endseq: bytes) -> EndseqTranslator:
+    return EndseqTranslator(long_rand_sync, long_rand_endseq)

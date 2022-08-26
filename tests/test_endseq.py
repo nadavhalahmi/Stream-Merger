@@ -17,16 +17,16 @@ def test_sync_is_endseq(endseq_translator_sync_is_endseq: EndseqTranslator, basi
     assert endseq_translator_sync_is_endseq.translate(message) == [simple_data]
 
 
-def test_random_long(endseq_translator: EndseqTranslator, rand_bytes_no_sync: bytes) -> None:
+def test_random_long(endseq_translator_long_rand: EndseqTranslator, rand_bytes_no_sync: bytes) -> None:
     many_times = 10
-    sync = endseq_translator.sync
-    endseq = endseq_translator.endseq
+    sync = endseq_translator_long_rand.sync
+    endseq = endseq_translator_long_rand.endseq
     full_message = rand_bytes_no_sync + \
         (sync + rand_bytes_no_sync + endseq)*many_times
     window_start = 0
     output = []
     while full_message[window_start: window_start+10]:
-        output = endseq_translator.translate(
+        output = endseq_translator_long_rand.translate(
             full_message[window_start: window_start+10])
         window_start += 10
     assert output == [rand_bytes_no_sync]*many_times
