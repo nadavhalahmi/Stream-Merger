@@ -1,5 +1,12 @@
 # Stream-Merger
 
+This project is albe to recieve bytes stream as input and print all messages found in all stream up to each input. It supports 3 different message types as described below.
+
+There are currently 3 active branches:
+- main: the main branch.
+- handle-bits-resolution: reads input in bits resolution instead of bytes resolution. see #2 for more details.
+- faster-complicated-translate-algorithms: a bit faster branch but more complicated.
+
 ## Clone
 ```
 git clone https://github.com/nadavhalahmi/Stream-Merger.git
