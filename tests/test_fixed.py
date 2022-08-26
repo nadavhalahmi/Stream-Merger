@@ -59,3 +59,8 @@ def test_long_sync(fixed_translator_long_sync: FixedTranslator, long_rand_sync: 
     message = long_rand_sync + basic_output
     assert fixed_translator_long_sync.data_size == len(basic_output)
     assert fixed_translator_long_sync.translate(message) == [basic_output]
+
+
+def test_bits(fixed_translator_bits_example: FixedTranslator) -> None:
+    assert fixed_translator_bits_example.translate(
+        b'\x3F\xC0\x40\x40') == [b'\x01\x01']

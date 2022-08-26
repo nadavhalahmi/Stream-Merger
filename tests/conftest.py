@@ -115,3 +115,8 @@ def fixed_translator_long(long_rand_sync: bytes, long_data_size: int) -> FixedTr
 @pytest.fixture
 def fixed_translator_long_sync(long_rand_sync: bytes, basic_output: bytes) -> FixedTranslator:
     return FixedTranslator(long_rand_sync, len(basic_output))
+
+
+@pytest.fixture
+def fixed_translator_bits_example() -> FixedTranslator:
+    return FixedTranslator(b'\xFF', 2)

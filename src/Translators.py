@@ -1,4 +1,5 @@
 from typing import List
+from bitstring import BitArray
 
 
 class Translator:
@@ -40,22 +41,24 @@ class FixedTranslator(Translator):
         @param input_bytes: as in Translator
         @return: as in Translator
         """
+
         self.input_so_far += input_bytes
-        window = (0, self.sync_size)
+        c = BitArray(self.input_so_far)
+        window = (0, self.sync_size * 8)
         last_output = -1
         # while we have enough room for a message
-        while window[1] + self.data_size - 1 < len(self.input_so_far):
-            if self.input_so_far[window[0]:window[1]] == self.sync:
+        while window[1] + self.data_size * 8 - 1 < len(c):
+            if c[window[0]:window[1]] == self.sync:
                 self.outputs_so_far.append(
-                    self.input_so_far[window[1]:window[1] + self.data_size])  # add data after sync
+                    c[window[1]:window[1] + self.data_size*8])  # add data after sync
                 # point to last byte of last output
-                last_output = window[0] + self.message_size - 1
-                window = (window[0] + self.message_size,
-                          window[1] + self.message_size)
+                last_output = window[0] + self.message_size*8 - 1
+                window = (window[0] + self.message_size*8,
+                          window[1] + self.message_size*8)
             else:
                 window = (window[0] + 1, window[1] + 1)
         # added outputs till last_output, so can be deleted from self.input_so_far
-        self.input_so_far = self.input_so_far[last_output+1:]
+        self.input_so_far = c[last_output+1:]
         return self.outputs_so_far
 
 
