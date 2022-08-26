@@ -33,6 +33,7 @@ class FixedTranslator(Translator):
         super().__init__(sync)
         self.data_size: int = data_size
         self.message_size = self.sync_size + data_size
+        self.looking_for_message = False
 
     def translate(self, input_bytes: bytes) -> List[bytes]:
         """
@@ -41,6 +42,13 @@ class FixedTranslator(Translator):
         @return: as in Translator
         """
         self.input_so_far += input_bytes
+        if self.looking_for_message:
+            if len(self.input_so_far) >= self.data_size:
+                self.outputs_so_far.append(self.input_so_far[:self.data_size])
+                self.input_so_far = self.input_so_far[self.data_size:]
+                self.looking_for_message = False
+            else:
+                return self.outputs_so_far
         curr_sync = self.input_so_far.find(self.sync)
         # while found sync and have enough room for a message
         while curr_sync != -1 and curr_sync + self.message_size - 1 < len(self.input_so_far):
@@ -50,6 +58,12 @@ class FixedTranslator(Translator):
                 self.input_so_far[data_range[0]:data_range[1]])  # add data after sync
             self.input_so_far = self.input_so_far[data_range[1]:]
             curr_sync = self.input_so_far.find(self.sync)
+        if curr_sync == -1:
+            # looking for sync, so only need sync_size bytes in input_so_far
+            self.input_so_far = self.input_so_far[-self.sync_size:]
+        else:  # found sync, so self.input_so_far == sync..start_of_message
+            self.looking_for_message = True
+            self.input_so_far = self.input_so_far[curr_sync + self.sync_size:]
         return self.outputs_so_far
 
 
